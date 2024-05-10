@@ -13,13 +13,10 @@
 //! Uses environment variable `SPAWNS_GLOBAL_SPAWNER` to switch global executor if there are
 //! multiple ones. See [spawns] for how to compat with [task::spawn].
 
+pub mod task;
+
 pub use async_select::select;
 pub use task::spawn;
-
-/// Spawn, join and cancel tasks in runtime agnostic way
-pub mod task {
-    pub use spawns_core::*;
-}
 
 #[doc(hidden)]
 #[cfg(feature = "test")]
