@@ -12,6 +12,7 @@ documentation = "https://docs.rs/asyncs"
 
 [package]
 name = "asyncs"
+description = "async runtime agnostic facilities"
 version.workspace = true
 edition.workspace = true
 homepage.workspace = true
