@@ -14,6 +14,7 @@
 //! multiple ones. See [spawns] for how to compat with [task::spawn].
 
 pub use async_select::select;
+pub use task::spawn;
 
 /// Spawn, join and cancel tasks in runtime agnostic way
 pub mod task {
