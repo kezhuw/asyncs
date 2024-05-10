@@ -1,0 +1,46 @@
+[workspace]
+resolver = "2"
+members = ["asyncs-test"]
+
+[workspace.package]
+license = "Apache-2.0"
+version = "0.1.0"
+edition = "2021"
+homepage = "https://github.com/kezhuw/asyncs"
+repository = "https://github.com/kezhuw/asyncs"
+documentation = "https://docs.rs/asyncs"
+
+[package]
+name = "asyncs"
+version.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+documentation.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+# For tests
+test = ["spawns-compat", "spawns/executor", "asyncs-test"]
+
+# For binary crates
+tokio = ["spawns/tokio"]
+smol = ["spawns/smol"]
+async-global-executor = ["spawns/async-global-executor"]
+
+# For doc inline of "spawns-core/compat"
+spawns-compat = ["spawns-core/compat"]
+
+[dependencies]
+async-select = "0.1.1"
+asyncs-test = { version = "0.1.0", path = "./asyncs-test", optional = true }
+spawns = { version = "0.2.3", optional = true }
+spawns-core = "1.1.0"
+
+[dev-dependencies]
+test-case = "3.3.1"
+
+[package.metadata.docs.rs]
+all-features = true
