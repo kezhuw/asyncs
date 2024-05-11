@@ -12,9 +12,22 @@ type AttributeArgs = Punctuated<syn::Meta, syn::Token![,]>;
 struct Configuration {
     crate_name: Option<Ident>,
     parallelism: Option<usize>,
+    send: Option<bool>,
 }
 
 impl Configuration {
+    fn set_send(&mut self, lit: &syn::Lit) -> Result<(), syn::Error> {
+        let span = lit.span();
+        if self.send.is_some() {
+            return Err(syn::Error::new(span, "`send` already set"));
+        }
+        if let syn::Lit::Bool(lit) = lit {
+            self.send = Some(lit.value);
+            return Ok(());
+        }
+        Err(syn::Error::new(span, "invalid `send` value, bool required"))
+    }
+
     fn set_crate_name(&mut self, lit: &syn::Lit) -> Result<(), syn::Error> {
         let span = lit.span();
         if self.crate_name.is_some() {
@@ -65,6 +78,7 @@ fn parse_config(args: AttributeArgs) -> Result<Configuration, syn::Error> {
                 match name.as_str() {
                     "parallelism" => config.set_parallelism(lit)?,
                     "crate" => config.set_crate_name(lit)?,
+                    "send" => config.set_send(lit)?,
                     _ => return Err(syn::Error::new_spanned(&name_value, "unknown attribute name")),
                 }
             },
@@ -128,21 +142,50 @@ fn generate(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let prefer_env_parallelism = config.parallelism.is_none();
     let parallelism = config.parallelism.unwrap_or(2);
-    quote! {
-        #(#attrs)*
-        #[::core::prelude::v1::test]
-        #vis fn #name() #ret {
-            let parallelism = match (#prefer_env_parallelism, #parallelism) {
-                (true, parallelism) => match ::std::env::var("ASYNCS_TEST_PARALLELISM") {
+    let parallelism = quote! {
+        let parallelism = match (#prefer_env_parallelism, #parallelism) {
+            (true, parallelism) => match ::std::env::var("ASYNCS_TEST_PARALLELISM") {
+                ::std::result::Result::Err(_) => parallelism,
+                ::std::result::Result::Ok(val) => match val.parse::<usize>() {
                     ::std::result::Result::Err(_) => parallelism,
-                    ::std::result::Result::Ok(val) => match val.parse::<usize>() {
-                        ::std::result::Result::Err(_) => parallelism,
-                        ::std::result::Result::Ok(n) => n,
+                    ::std::result::Result::Ok(n) => n,
+                }
+            }
+            (false, parallelism) => parallelism,
+        };
+    };
+
+    let send = config.send.unwrap_or(true);
+    if send {
+        quote! {
+            #(#attrs)*
+            #[::core::prelude::v1::test]
+            #vis fn #name() #ret {
+                #parallelism
+                #crate_name::__executor::Blocking::new(parallelism).block_on(async move #body)
+            }
+        }
+    } else {
+        quote! {
+            #(#attrs)*
+            #[::core::prelude::v1::test]
+            #vis fn #name() #ret {
+                struct _Sendable<T>(T);
+
+                unsafe impl<T> Send for _Sendable<T> {}
+
+                impl<T: ::core::future::Future> ::core::future::Future for _Sendable<T> {
+                    type Output = T::Output;
+
+                    fn poll(self: ::core::pin::Pin<&mut Self>, cx: &mut ::core::task::Context<'_>) -> ::core::task::Poll<Self::Output> {
+                        let future = unsafe { ::core::pin::Pin::new_unchecked(&mut self.get_unchecked_mut().0) };
+                        future.poll(cx)
                     }
                 }
-                (false, parallelism) => parallelism,
-            };
-            #crate_name::__executor::Blocking::new(parallelism).block_on(async move #body)
+
+                #parallelism
+                #crate_name::__executor::Blocking::new(parallelism).block_on(_Sendable(async move #body))
+            }
         }
     }
 }
@@ -153,6 +196,7 @@ fn generate(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// * `parallelism`: non negative integer to specify parallelism for executor. Defaults to
 ///   environment variable `ASYNCS_TEST_PARALLELISM` and `2` in fallback. `0` means available
 ///   cores.
+/// * `send`: whether the async function need to be `Send`. Defaults to `true`.
 ///
 /// ## Examples
 /// ```ignore
