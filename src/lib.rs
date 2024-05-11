@@ -29,7 +29,9 @@ pub use asyncs_test::test;
 
 #[cfg(test)]
 mod tests {
-    use std::future::{pending, ready};
+    use std::future::{pending, ready, Future};
+    use std::pin::Pin;
+    use std::task::{Context, Poll};
 
     use crate::select;
 
@@ -55,5 +57,29 @@ mod tests {
     #[should_panic]
     async fn with_test_case(input: i32) {
         assert_eq!(input, 6);
+    }
+
+    struct NotSend {
+        _rc: std::rc::Rc<()>,
+    }
+
+    impl NotSend {
+        fn new() -> Self {
+            Self { _rc: std::rc::Rc::new(()) }
+        }
+    }
+
+    impl Future for NotSend {
+        type Output = ();
+
+        fn poll(self: Pin<&mut Self>, _cx: &mut Context<'_>) -> Poll<Self::Output> {
+            Poll::Ready(())
+        }
+    }
+
+    #[crate::test(crate = "crate", send = false)]
+    async fn with_not_send() {
+        let not_send = NotSend::new();
+        not_send.await
     }
 }
