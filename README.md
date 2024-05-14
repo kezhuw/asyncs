@@ -7,21 +7,21 @@
 
 `asyncs` is a shim like package to ship async runtime agnostic facilities.
 
-## Usage
-```
-[dependencies]
-asyncs = "0.1.0"
+## Usages
 
-[dev-dependencies]
-asyncs = { version = "0.1.0", features = ["test"] }
-```
+* `cargo add asyncs` for libraries.
+* `cargo add --dev --features test asyncs` for tests.
+* `cargo add --features tokio,smol,async-global-executor` for binaries to compat with existing async runtimes. See [spawns][] for more.
 
 Feature `test` should only be enabled for `dev-dependencies`.
 
 ## Provides
-* `asyncs::task::spawn` to spawn tasks in runtime agnostic way from [spawns](https://docs.rs/spawns).
-* `select!` to multiplex asynchronous futures simultaneously from [async-select](https://docs.rs/async-select).
+* `asyncs::task::spawn` to spawn tasks in runtime agnostic way from [spawns][].
+* `select!` to multiplex asynchronous futures simultaneously from [async-select][].
 * `#[asyncs::test]` to bootstrap a runtime for testing. This is only available with feature `test`.
 
 ## Does not provide
-Executors.
+Executors and `#[asyncs::main]`.
+
+[spawns]: https://docs.rs/spawns
+[async-select]: https://docs.rs/async-select
