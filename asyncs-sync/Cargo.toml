@@ -13,5 +13,5 @@ documentation.workspace = true
 [dependencies]
 
 [dev-dependencies]
-asyncs = { version = "0.2.1", path = "../", features = ["test"] }
+asyncs = { version = "0.3.0", path = "../", features = ["test"] }
 futures = "0.3.30"

@@ -4,7 +4,7 @@ members = ["asyncs-test", "asyncs-sync"]
 
 [workspace.package]
 license = "Apache-2.0"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Kezhu Wang <kezhuw@gmail.com>"]
 homepage = "https://github.com/kezhuw/asyncs"
@@ -37,8 +37,8 @@ spawns-compat = ["spawns-core/compat"]
 
 [dependencies]
 async-select = "0.2.0"
-asyncs-test = { version = "0.2.1", path = "./asyncs-test", optional = true }
-asyncs-sync = { version = "0.2.1", path = "./asyncs-sync" }
+asyncs-test = { version = "0.3.0", path = "./asyncs-test", optional = true }
+asyncs-sync = { version = "0.3.0", path = "./asyncs-sync" }
 spawns = { version = "0.2.4", optional = true }
 spawns-core = "1.1.1"
 
