@@ -103,4 +103,4 @@ jobs:
     - name: publish crate
       env:
         CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-      run: cargo workspaces publish --from-git
+      run: cargo workspaces publish --allow-dirty --from-git
