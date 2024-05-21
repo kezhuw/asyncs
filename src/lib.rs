@@ -14,8 +14,9 @@
 //! multiple ones. See [spawns] for how to compat with [task::spawn].
 
 pub mod task;
-
 pub use async_select::select;
+#[doc(inline)]
+pub use asyncs_sync as sync;
 pub use task::spawn;
 
 #[doc(hidden)]

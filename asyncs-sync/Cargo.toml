@@ -1,0 +1,17 @@
+[package]
+name = "asyncs-sync"
+description = "Asynchronous runtime agnostic synchronization utilities"
+readme.workspace = true
+authors.workspace = true
+edition.workspace = true
+version.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+documentation.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+asyncs = { version = "0.2.1", path = "../", features = ["test"] }
+futures = "0.3.30"
