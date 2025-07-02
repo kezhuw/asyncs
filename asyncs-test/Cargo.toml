@@ -9,7 +9,7 @@ license.workspace = true
 repository.workspace = true
 documentation.workspace = true
 
-categories = ["async", "test", "testing"]
+categories = ["development-tools::build-utils"]
 
 [lib]
 proc-macro = true

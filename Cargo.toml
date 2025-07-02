@@ -21,6 +21,8 @@ license.workspace = true
 repository.workspace = true
 documentation.workspace = true
 
+categories = ["asynchronous", "development-tools::testing"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
