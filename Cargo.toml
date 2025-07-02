@@ -36,7 +36,7 @@ async-global-executor = ["spawns/async-global-executor"]
 spawns-compat = ["spawns-core/compat"]
 
 [dependencies]
-async-select = "0.2.0"
+async-select = "0.2.1"
 asyncs-test = { version = "0.3.0", path = "./asyncs-test", optional = true }
 asyncs-sync = { version = "0.3.0", path = "./asyncs-sync" }
 spawns = { version = "0.2.4", optional = true }
