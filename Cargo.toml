@@ -39,8 +39,8 @@ spawns-compat = ["spawns-core/compat"]
 
 [dependencies]
 async-select = "0.2.1"
-asyncs-test = { path = "./asyncs-test", optional = true }
-asyncs-sync = { path = "./asyncs-sync" }
+asyncs-test = { version = "0.3.1", path = "./asyncs-test", optional = true }
+asyncs-sync = { version = "0.3.1", path = "./asyncs-sync" }
 spawns = { version = "0.2.4", optional = true }
 spawns-core = "1.1.1"
 
