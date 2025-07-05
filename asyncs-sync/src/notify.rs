@@ -275,7 +275,7 @@ impl From<State> for usize {
 impl From<usize> for State {
     fn from(i: usize) -> Self {
         let status = i & STATUS_MASK;
-        Self { round: Round::from(i), status: unsafe { std::mem::transmute(status) } }
+        Self { round: Round::from(i), status: unsafe { std::mem::transmute::<usize, Status>(status) } }
     }
 }
 
@@ -301,7 +301,7 @@ impl From<Notification> for usize {
 impl From<usize> for Notification {
     fn from(u: usize) -> Self {
         let kind = u & STATUS_MASK;
-        Self { kind: unsafe { std::mem::transmute(kind) }, round: Round::from(u) }
+        Self { kind: unsafe { std::mem::transmute::<usize, NotificationKind>(kind) }, round: Round::from(u) }
     }
 }
 

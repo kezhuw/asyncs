@@ -32,8 +32,10 @@ jobs:
       with:
           toolchain: stable
           override: true
+    - name: Install cargo-all-features
+      run: cargo install cargo-all-features
     - name: Build code
-      run: cargo build --workspace --examples
+      run: cargo build-all-features
 
   test:
     needs: [build]
@@ -89,7 +91,7 @@ jobs:
           override: true
           components: clippy
     - name: Lint code
-      run: cargo clippy --no-deps -- -D clippy::all
+      run: cargo clippy --workspace --all-targets --all-features --no-deps -- -D clippy::all
 
   release:
     if: github.event_name == 'push' && github.ref_type == 'tag'

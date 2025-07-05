@@ -73,7 +73,7 @@ fn parse_config(args: AttributeArgs) -> Result<Configuration, syn::Error> {
                     .to_string();
                 let lit = match &name_value.value {
                     syn::Expr::Lit(syn::ExprLit { lit, .. }) => lit,
-                    expr => return Err(syn::Error::new_spanned(expr, format!("{} expect literal value", name))),
+                    expr => return Err(syn::Error::new_spanned(expr, format!("{name} expect literal value"))),
                 };
                 match name.as_str() {
                     "parallelism" => config.set_parallelism(lit)?,
@@ -116,7 +116,7 @@ fn is_test_attribute(attr: &Attribute) -> bool {
 }
 
 fn generate(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let config = AttributeArgs::parse_terminated.parse2(attr).and_then(|args| parse_config(args)).unwrap();
+    let config = AttributeArgs::parse_terminated.parse2(attr).and_then(parse_config).unwrap();
 
     let input = syn::parse2::<syn::ItemFn>(item).unwrap();
 
@@ -130,14 +130,13 @@ fn generate(attr: TokenStream, item: TokenStream) -> TokenStream {
     let macro_name = format!("#[{crate_name}:test]");
 
     if input.sig.asyncness.is_none() {
-        let err =
-            syn::Error::new_spanned(input, format!("only asynchronous function can be tagged with {}", macro_name));
-        return TokenStream::from(err.into_compile_error());
+        let err = syn::Error::new_spanned(input, format!("only asynchronous function can be tagged with {macro_name}"));
+        return err.into_compile_error();
     }
 
     if let Some(attr) = attrs.clone().into_iter().find(is_test_attribute) {
         let msg = "second test attribute is supplied, consider removing or changing the order of your test attributes";
-        return TokenStream::from(syn::Error::new_spanned(attr, msg).into_compile_error());
+        return syn::Error::new_spanned(attr, msg).into_compile_error();
     };
 
     let prefer_env_parallelism = config.parallelism.is_none();

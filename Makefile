@@ -9,7 +9,7 @@ check_fmt:
 	cargo +nightly fmt --all -- --check
 
 lint:
-	cargo clippy --tests --examples --bins --all-features --no-deps -- -D clippy::all
+	cargo clippy --workspace --all-targets --all-features --no-deps -- -D clippy::all
 
 build:
 	cargo build --workspace --all-features
@@ -21,4 +21,4 @@ test:
 	cargo test --workspace --all-features
 
 doc:
-	cargo doc --all-features
+	cargo doc --workspace --all-features

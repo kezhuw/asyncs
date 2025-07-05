@@ -569,7 +569,7 @@ mod tests {
         let latest = receiver.borrow();
         // then: have seen initial value
         assert_eq!(*latest, 5);
-        assert_eq!(latest.has_changed(), false);
+        assert!(!latest.has_changed());
         drop(latest);
 
         // when: send
@@ -577,7 +577,7 @@ mod tests {
         // then: receiver will observe that send
         let latest = receiver.borrow();
         assert_eq!(*latest, 6);
-        assert_eq!(latest.has_changed(), true);
+        assert!(latest.has_changed());
         drop(latest);
 
         // when: send after all receivers dropped.
@@ -588,7 +588,7 @@ mod tests {
         let receiver = sender.subscribe();
         let latest = receiver.borrow();
         assert_eq!(*latest, 6);
-        assert_eq!(latest.has_changed(), false);
+        assert!(!latest.has_changed());
         drop(latest);
         drop(receiver);
 
@@ -598,7 +598,7 @@ mod tests {
         let receiver = sender.subscribe();
         let latest = receiver.borrow();
         assert_eq!(*latest, 7);
-        assert_eq!(latest.has_changed(), false);
+        assert!(!latest.has_changed());
     }
 
     #[asyncs::test]
