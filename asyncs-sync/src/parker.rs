@@ -211,8 +211,8 @@ mod tests {
         #[allow(invalid_reference_casting)]
         let mutable = unsafe { &mut *(shared.as_ref() as *const usize as *mut usize) };
         *mutable = 5;
-        unsafe {
-            parking.unpark();
+        if let Some(waker) = unsafe { parking.unpark() } {
+            waker.wake();
         }
 
         assert_eq!(handle.await.unwrap(), 5);
